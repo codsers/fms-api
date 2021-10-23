@@ -1,0 +1,44 @@
+server:
+  port: ${APP_PORT:8888}
+  address: 0.0.0.0
+
+spring:
+  resources:
+    static-locations: classpath:/static/,classpath:/static/logo/
+  freemarker:
+    request-context-attribute: req
+    suffix: .html
+    content-type: text/html
+    enabled: true
+    cache: false
+    template-loader-path: classpath:/templates
+    charset: UTF-8
+    settings:
+      number_format: '0.##'
+  profiles:
+    active: dev
+  jackson:
+    time-zone: GMT+8
+  data:
+    redis:
+      repositories:
+        enabled: false
+
+# 配置mybatis-plus
+mybatis-plus:
+  global-config:
+    banner: false # 关闭banner
+  mapper-locations: classpath:mapper/*Mapper.xml
+  configuration:
+    mapUnderscoreToCamelCase: true # 开启驼峰命令映射转换
+
+task:
+  pool:
+    # 核心线程池大小
+    core-pool-size: 10
+    # 最大线程数
+    max-pool-size: 30
+    # 活跃时间
+    keep-alive-seconds: 60
+    # 队列容量
+    queue-capacity: 50

@@ -1,0 +1,75 @@
+<#include "./header.html">
+
+  <div id="app" class="login-container">
+    <div class="login-form-container">
+      <div class="login-form-logo">
+        <img src="/logo/fmsapi.png"/>
+      </div>
+      <div class="login-form-former">
+        <el-form size="mini" :ref="loginForm.ref" :rules="loginForm.rules" :model="loginForm.model"
+          :label-width="loginForm.labelWidth">
+          <el-form-item  prop="username">
+            <el-input placeholder="用户名" v-model="loginForm.model.username">
+              <template slot="prepend"><i class="el-icon-user-solid"></i></template>
+            </el-input>
+          </el-form-item>
+          <el-form-item  prop="password">
+            <el-input @keyup.enter.native="login" placeholder="密码"  type="password" v-model="loginForm.model.password">
+              <template slot="prepend"><i class="el-icon-star-on"></i></template>
+            </el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button style="width:100%" type="success" @click="login" :loading="isLogin">{{isLogin?'正在登录...':'登录'}}</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
+  </div>
+  <script>
+    // const basePath=`${basePath}`;
+    new Vue({
+      el: '#app',
+      data: {
+        isLogin:false,
+        loginForm: {
+          ref: 'loginForm',
+          labelWidth: '0px',
+          rules: {
+            username: [
+              { required: true, message: '请输入用户名', trigger: 'blur' }
+            ],
+            password: [
+              { required: true, message: '请输入密码', trigger: 'blur' }
+            ],
+          },
+          model: {
+            username: '',
+            password: ''
+          }
+        }
+      },
+      methods: {
+        login() {
+          this.$refs[this.loginForm.ref].validate(async (valid) => {
+            if (valid) {
+              this.isLogin=true;
+              await fetch('/fms/admin/login.json?username='+this.loginForm.model.username+'&password='+this.loginForm.model.password).then(res => res.json()).then((res) => {
+                this.isLogin=false;  
+                if(res&&res.code&&res.code==2000){
+                    this.$message.success(res.msg)
+                    window.location.replace('/fms/admin');
+                  }else {
+                    this.$message.error(res.msg)
+                  }
+              }).then((error) => {
+                this.isLogin=false;
+              });
+            } else {
+              return false;
+            }
+          });
+        }
+      }
+    })
+  </script>
+  <#include "./footer.html">

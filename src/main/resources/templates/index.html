@@ -1,0 +1,490 @@
+<#include "./header.html">
+
+  <div id="app" class="home-container">
+    <div class="home-header">
+      <div class="home-login-logo"><img src="/logo/fmsapi.png" style="width:215px;height:50px"/></div>
+      <el-button size="mini" type="danger" @click="exitSystem">退出系统</el-button>
+    </div>
+    <div class="home-bodyer">
+      <el-tabs v-model="activeTabName" @tab-click="tabClick">
+        <el-tab-pane label="应用管理" name="app">
+          <el-row>
+            <el-col>
+              <el-input v-model="app.query.appId" clearable size="small" placeholder="输入应用Id" style="width: 200px"
+                class="filter-item"></el-input>
+              <el-input v-model="app.query.appName" clearable size="small" placeholder="输入应用名称" style="width: 200px"
+                class="filter-item"></el-input>
+              <el-input v-model="app.query.appDesc" clearable size="small" placeholder="输入应用描述" style="width: 200px"
+                class="filter-item"></el-input>
+              <el-button class="filter-item" size="mini" icon="el-icon-search" style="margin: 5px" @click="getAppData"
+                type="primary">搜索</el-button>
+              <el-button class="filter-item" size="mini" icon="el-icon-refresh-left" style="margin: 5px"
+                @click="resetAppQuery" type="warning">重置</el-button>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col>
+              <el-button class="filter-item" size="mini" style="margin: 5px" @click="addApp" type="success">新增应用
+              </el-button>
+              <el-button class="filter-item" size="mini" style="margin: 5px" @click="getAppData">
+                <i class="el-icon-refresh"></i>
+              </el-button>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col>
+              <el-table :ref="app.tableRef" v-loading="app.loading" :data="app.data" style="width: 100%;font-size:12pt">
+                <el-table-column label="应用ID" prop="appId"></el-table-column>
+                <el-table-column label="应用名称" prop="appName"></el-table-column>
+                <el-table-column label="文件数" prop="fileNum"></el-table-column>
+                <el-table-column label="应用描述" prop="appDesc"></el-table-column>
+                <el-table-column label="创建时间">
+                  <template slot-scope="scope">
+                    {{dateFmt(scope.row.createTime)}}
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作" width="150">
+                  <template slot-scope="scope">
+                    <el-button @click="editApp(scope.row)" size="mini" type="primary">编辑</el-button>
+                    <el-button @click="deleteApp(scope.row)" size="mini" type="danger">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <el-pagination style="margin-top: 20px" @current-change="appHandleCurrentChange"
+                :current-page.sync="app.pagination.currentPage" :page-size="app.pagination.pageSize"
+                layout="total,prev, pager, next, jumper" :total="app.pagination.total">
+              </el-pagination>
+            </el-col>
+          </el-row>
+
+          <el-dialog :modal-append-to-body="false" :close-on-click-modal="app.modal.closeOnClikeModal"
+            :title="app.modal.title" :visible.sync="app.modal.visible" :width="app.modal.width"
+            :before-close="appModalBeforeClose">
+            <el-form size="mini" :ref="app.modal.form.ref" :rules="app.modal.form.rules" :model="app.modal.form.model"
+              :label-width="app.modal.form.labelWidth">
+              <el-form-item label="应用ID" prop="appId">
+                <el-input :disabled="!app.modal.isAdd" placeholder="应用ID" v-model="app.modal.form.model.appId">
+                </el-input>
+              </el-form-item>
+              <el-form-item label="应用名称" prop="appName">
+                <el-input placeholder="应用名称" v-model="app.modal.form.model.appName"></el-input>
+              </el-form-item>
+              <el-form-item label="应用描述" prop="appDesc">
+                <el-input placeholder="应用描述" type="textarea" :rows="5" v-model="app.modal.form.model.appDesc">
+                </el-input>
+              </el-form-item>
+            </el-form>
+            <span slot="footer">
+              <el-button size="mini" @click="app.modal.visible = false">取消</el-button>
+              <el-button size="mini" type="primary" @click="appModalSubmit" :loading="app.modal.isSubmit">
+                {{app.modal.isSubmit?'正在保存...':'保存'}}</el-button>
+            </span>
+          </el-dialog>
+        </el-tab-pane>
+        <el-tab-pane label="文件管理" name="file">
+
+
+          <el-row>
+            <el-col>
+              <!-- <el-input v-model="file.query.appId" clearable size="small" placeholder="输入应用ID" style="width: 200px"
+                class="filter-item"></el-input> -->
+              <el-input v-model="file.query.appName" clearable size="small" placeholder="输入应用名称" style="width: 200px"
+                class="filter-item"></el-input>
+              <el-input v-model="file.query.fileId" clearable size="small" placeholder="输入文件ID" style="width: 200px"
+                class="filter-item"></el-input>
+              <el-input v-model="file.query.realName" clearable size="small" placeholder="输入文件名称" style="width: 200px"
+                class="filter-item"></el-input>
+              <el-input v-model="file.query.suffix" clearable size="small" placeholder="输入文件后缀" style="width: 200px"
+                class="filter-item"></el-input>
+              <el-input v-model="file.query.cusTag" clearable size="small" placeholder="输入文件标签" style="width: 200px"
+                class="filter-item"></el-input>
+              <el-select v-model="file.query.enableDownload" clearable size="small" placeholder="下载状态"
+                class="filter-item" style="width: 213px; margin: 5px">
+                <el-option label="可下载" value="1"></el-option>
+                <el-option label="不可下载" value="0"></el-option>
+              </el-select>
+              <el-button class="filter-item" size="mini" icon="el-icon-search" style="margin: 5px" @click="getFileData"
+                type="primary">搜索</el-button>
+              <el-button class="filter-item" size="mini" icon="el-icon-refresh-left" style="margin: 5px"
+                @click="resetFileQuery" type="warning">重置</el-button>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col>
+              <el-button class="filter-item" size="mini" style="margin: 5px" @click="getFileData">
+                <i class="el-icon-refresh"></i>
+              </el-button>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col>
+              <el-table :ref="file.tableRef" v-loading="file.loading" :data="file.data"
+                style="width: 100%;font-size:12pt">
+                <!-- <el-table-column label="应用ID" prop="appId"></el-table-column> -->
+                <el-table-column label="应用名称" prop="appName"></el-table-column>
+                <el-table-column label="文件ID" prop="fileId">
+                  <template slot-scope="scope">
+                    <!-- <a v-if="scope.row.enableDownload==1" :href="getDownloadHref(scope.row)" target="_blank" type="primary" >{{scope.row.fileId}}</a> -->
+                    <el-link size="mini" v-if="scope.row.enableDownload==1" :href="getDownloadHref(scope.row)"
+                      target="_blank" type="primary">{{scope.row.fileId}}</el-link>
+                    <span v-else>{{scope.row.fileId}}</span>
+                  </template>
+                </el-table-column>
+                <!-- <el-table-column label="SHA256" prop="sha256" :show-overflow-tooltip="true"></el-table-column> -->
+                <el-table-column label="文件名" prop="realName" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column label="文件后缀" prop="suffix"></el-table-column>
+                <el-table-column label="文件大小" prop="showSize"></el-table-column>
+                <el-table-column label="自定义标签">
+                  <template slot-scope="scope">
+                    <el-tag size="mini">{{scope.row.cusTag?scope.row.cusTag:'-'}}</el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column label="上传时间" width="150">
+                  <template slot-scope="scope">
+                    {{dateFmt(scope.row.uploadTime)}}
+                  </template>
+                </el-table-column>
+                <el-table-column label="下载状态">
+                  <template slot-scope="scope">
+                    <!-- <el-tag :type="scope.row.enableDownload==1?'success':'danger'"  effect="dark">{{scope.row.enableDownload==1?'可下载':'不可下载'}}</el-tag> -->
+                    <el-switch @change="fileDownloadStatusChange(scope.row)" v-model="scope.row.enableDownload==1">
+                    </el-switch>
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作" width="150">
+                  <template slot-scope="scope">
+                    <el-button @click="fileDetail(scope.row)" size="mini">详情</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <el-pagination style="margin-top: 20px" @current-change="fileHandleCurrentChange"
+                :current-page.sync="file.pagination.currentPage" :page-size="file.pagination.pageSize"
+                layout="total,prev, pager, next, jumper" :total="file.pagination.total">
+              </el-pagination>
+            </el-col>
+          </el-row>
+
+
+
+          <el-dialog :modal-append-to-body="false" :close-on-click-modal="file.modal.closeOnClikeModal"
+            :title="file.modal.title" :visible.sync="file.modal.visible" :width="file.modal.width">
+            <el-descriptions :column="4" size="mini" :border="true">
+              <el-descriptions-item label="应用ID">{{file.modal.data.appId}}</el-descriptions-item>
+              <el-descriptions-item label="应用名称">{{file.modal.data.appName}}</el-descriptions-item>
+              <el-descriptions-item label="文件ID">
+                <el-link size="mini" v-if="file.modal.data.enableDownload==1" :href="getDownloadHref(file.modal.data)"
+                  target="_blank" type="primary">{{file.modal.data.fileId}}</el-link>
+                <span v-else>{{file.modal.data.fileId}}</span>
+              </el-descriptions-item>
+              <el-descriptions-item label="文件名称">{{file.modal.data.realName}}</el-descriptions-item>
+              <el-descriptions-item label="上传时间" :span="2">{{dateFmt(file.modal.data.uploadTime)}}
+              </el-descriptions-item>
+              <el-descriptions-item label="下载状态" :span="2">
+                <el-tag size="mini" :type="file.modal.data.enableDownload==1?'success':'danger'" effect="dark">
+                  {{file.modal.data.enableDownload==1?'可下载':'不可下载'}}</el-tag>
+              </el-descriptions-item>
+              <el-descriptions-item label="文件后缀">{{file.modal.data.suffix}}</el-descriptions-item>
+              <el-descriptions-item label="文件大小">{{file.modal.data.showSize}}</el-descriptions-item>
+              <el-descriptions-item label="原始大小">{{file.modal.data.size}}</el-descriptions-item>
+              <el-descriptions-item label="自定义标签">{{file.modal.data.cusTag}}</el-descriptions-item>
+
+              <el-descriptions-item label="sha256" :span="4">{{file.modal.data.sha256}}</el-descriptions-item>
+              <el-descriptions-item label="存储文件名" :span="4">{{file.modal.data.saveName}}</el-descriptions-item>
+              <el-descriptions-item label="存储物理路径" :span="4">{{file.modal.data.path}}</el-descriptions-item>
+              <el-descriptions-item label="业务数据" :span="4">{{file.modal.data.busInfo}}</el-descriptions-item>
+
+            </el-descriptions>
+          </el-dialog>
+        </el-tab-pane>
+      </el-tabs>
+
+
+
+
+    </div>
+  </div>
+  <script>
+    // const basePath = `${basePath}`;
+    new Vue({
+      el: '#app',
+      data: {
+        activeTabName: 'app',
+        file: {
+          modal: {
+            closeOnClikeModal: true,
+            title: '文件详情',
+            visible: false,
+            width: '80%',
+            data: {}
+          },
+          tableRef: 'fileTable',
+          loading: false,
+          data: [],
+          query: {
+            fileId: '',
+            appId: '',
+            appName: '',
+            realName: '',
+            suffix: '',
+            cusTag: '',
+            appDesc: '',
+            enableDownload: ''
+          },
+          pagination: {
+            currentPage: 1,
+            pageSize: 10,
+            total: 0,
+          }
+        },
+        app: {
+          modal: {
+            isAdd: true,
+            closeOnClikeModal: false,
+            title: '新增应用',
+            visible: false,
+            width: '300px',
+            isSubmit: false,
+            form: {
+              ref: 'appModalFormRef',
+              labelWidth: '100px',
+              model: {
+                appId: '',
+                appName: '',
+                appDesc: ''
+              },
+              rules: {
+                appId: [
+                  { required: true, message: '请输入应用ID', trigger: 'blur' }
+                ],
+                appName: [
+                  { required: true, message: '请输入应用名称', trigger: 'blur' }
+                ]
+              }
+            }
+          },
+          tableRef: 'appTable',
+          loading: false,
+          data: [],
+          query: {
+            appId: '',
+            appName: '',
+            appDesc: ''
+          },
+          pagination: {
+            currentPage: 1,
+            pageSize: 10,
+            total: 0,
+          }
+        }
+      },
+      mounted() {
+        this.getAppData();
+      },
+      methods: {
+        // 根据文件id构建下载文件地址
+        getDownloadHref(row) {
+          return '/fms/fds/download?fileId=' + row.fileId;
+        },
+        // 应用列表当前页码切换
+        appHandleCurrentChange(e) {
+          this.app.pagination.currentPage = e;
+          this.getAppData();
+        },
+        // 文件列表当前页码切换
+        fileHandleCurrentChange(e) {
+          this.file.pagination.currentPage = e;
+          this.getFileData();
+        },
+        // 应用编辑窗口关闭之前操作
+        appModalBeforeClose(done) {
+          this.$refs[this.app.modal.form.ref].resetFields();
+          done();
+        },
+        // 应用编辑提交
+        appModalSubmit() {
+          this.$refs[this.app.modal.form.ref].validate(async (valid) => {
+            if (valid) {
+              this.app.modal.isSubmit = true;
+              fetch('/fms/app/' + (this.app.modal.isAdd ? 'add' : 'edit'), {
+                method: "POST",
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(this.app.modal.form.model)
+              }).then(res => res.json()).then(res => {
+                this.app.modal.isSubmit = false;
+                if (res && res.code && res.code == 2000) {
+                  this.$message.success(res.msg)
+                  this.app.pagination.currentPage = 1;
+                  this.getAppData();
+                  this.app.modal.visible = false;
+                } else {
+                  this.$message.error(res.msg)
+                }
+              }).then((error) => {
+                this.app.modal.isSubmit = false;
+              });
+            } else {
+              return false;
+            }
+          });
+        },
+        // 时间戳日期格式化
+        dateFmt(d, fmt = 'YYYY-MM-DD HH:mm:ss') {
+          return moment(d).format(fmt);
+        },
+        // 打开编辑应用信息窗口
+        editApp(row) {
+          this.app.modal.form.model = JSON.parse(JSON.stringify(row))
+          this.app.modal.isAdd = false;
+          this.app.modal.visible = true;
+        },
+        // 删除行应用信息
+        deleteApp(row) {
+          this.$confirm('此操作将永久删除该应用及应用所属的全部文件, 是否继续?', '提示', {
+            confirmButtonText: '确定删除此应用',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(async () => {
+            await fetch('/fms/app/rm?appId=' + row.appId).then(res => res.json()).then((res) => {
+              if (res && res.code && res.code == 2000) {
+                this.$message.success(res.msg)
+                this.getAppData();
+              } else {
+                this.$message.error(res.msg)
+              }
+            }).then((error) => {
+            });
+          }).catch(err=>{})
+
+        },
+        // 打开新增应用窗口
+        addApp() {
+          this.app.modal.form.model = {
+            appId: '',
+            appName: '',
+            appDesc: ''
+          }
+          this.app.modal.isAdd = true;
+          this.app.modal.visible = true;
+        },
+        // 分页查询应用列表
+        async getAppData() {
+          this.app.loading = true;
+          await fetch('/fms/app/list', {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              ...this.app.query,
+              pageSize: this.app.pagination.pageSize,
+              currentPage: this.app.pagination.currentPage
+            })
+          }).then(res => res.json()).then((res) => {
+            this.app.loading = false;
+            if (res && res.code && res.code == 2000) {
+              this.app.data = res.data.data;
+              this.app.pagination.total = res.data.total;
+            } else {
+              this.$message.error(res.msg)
+            }
+          }).then((error) => {
+            this.app.loading = false;
+          });
+        },
+        // 分页查询文件类表
+        async getFileData() {
+          this.file.loading = true;
+          await fetch('/fms/file/list', {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              ...this.file.query,
+              pageSize: this.file.pagination.pageSize,
+              currentPage: this.file.pagination.currentPage
+            })
+          }).then(res => res.json()).then((res) => {
+            this.file.loading = false;
+            if (res && res.code && res.code == 2000) {
+              this.file.data = res.data.data;
+              this.file.pagination.total = res.data.total;
+            } else {
+              this.$message.error(res.msg)
+            }
+          }).then((error) => {
+            this.file.loading = false;
+          });
+        },
+        // 重置应用列表查询
+        resetAppQuery() {
+          this.app.query = {
+            appId: '',
+            appName: '',
+            appDesc: ''
+          }
+          this.app.pagination.currentPage = 1;
+          this.getAppData();
+        },
+        // 重置文件列表查询
+        resetFileQuery() {
+          this.file.query = {
+            fileId: '',
+            appId: '',
+            appName: '',
+            realName: '',
+            suffix: '',
+            cusTag: '',
+            appDesc: '',
+            enableDownload: ''
+          }
+          this.file.pagination.currentPage = 1;
+          this.getFileData();
+        },
+        // tab切换操作
+        tabClick(tab) {
+          if (this.activeTabName == 'app') {
+            this.app.pagination.currentPage = 1;
+            this.getAppData();
+          }
+
+          if (this.activeTabName == 'file') {
+            this.file.pagination.currentPage = 1;
+            this.getFileData();
+          }
+        },
+        // 文件下载状态改变操作
+        async fileDownloadStatusChange(row) {
+          await fetch('/fms/file/changeDownloadStatus?fileId=' + row.fileId + '&dwe=' + row.enableDownload).then(res => res.json()).then((res) => {
+            if (res && res.code && res.code == 2000) {
+              this.$message.success(res.msg)
+              this.getFileData();
+            } else {
+              this.$message.error(res.msg)
+            }
+          }).then((error) => {
+          });
+        },
+        // 查看文件详情
+        fileDetail(row) {
+          this.file.modal.data = JSON.parse(JSON.stringify(row));
+          this.file.modal.visible = true;
+        },
+        // 退出系统
+        async exitSystem() {
+          await fetch('/fms/admin/logout.json').then(res => res.json()).then((res) => {
+            if (res && res.code && res.code == 2000) {
+              this.$message.success(res.msg)
+              window.location.replace('/fms/admin');
+            } else {
+              this.$message.error(res.msg)
+            }
+          }).then((error) => {
+          });
+        }
+      }
+    })
+  </script>
+  <#include "./footer.html">

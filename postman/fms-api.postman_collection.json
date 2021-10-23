@@ -1,0 +1,214 @@
+{
+	"info": {
+		"_postman_id": "c1724211-6891-4afc-8017-719f2b57438b",
+		"name": "fms-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "应用管理",
+			"item": [
+				{
+					"name": "新增应用",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "appId",
+									"value": "codser61",
+									"type": "text"
+								},
+								{
+									"key": "appName",
+									"value": "OA系统",
+									"type": "text"
+								},
+								{
+									"key": "appDesc",
+									"value": "OA系统...",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:8888/fms/app/add"
+					},
+					"response": []
+				},
+				{
+					"name": "查询应用",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8888/fms/app/list?pageSize=10&currentPage=1",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8888",
+							"path": [
+								"fms",
+								"app",
+								"list"
+							],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "currentPage",
+									"value": "1"
+								},
+								{
+									"key": "appId",
+									"value": "codser1",
+									"disabled": true
+								},
+								{
+									"key": "appDesc",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "编辑应用",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8888/fms/app/edit?appId=codser&appName=OA系统111223",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8888",
+							"path": [
+								"fms",
+								"app",
+								"edit"
+							],
+							"query": [
+								{
+									"key": "appId",
+									"value": "codser"
+								},
+								{
+									"key": "appName",
+									"value": "OA系统111223"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除应用",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8888/fms/app/rm?appId=codser",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8888",
+							"path": [
+								"fms",
+								"app",
+								"rm"
+							],
+							"query": [
+								{
+									"key": "appId",
+									"value": "codser"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "文件管理",
+			"item": []
+		},
+		{
+			"name": "upload",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/Administrator/Desktop/dev2.lnk"
+						},
+						{
+							"key": "sd",
+							"value": "test",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "ud",
+							"value": "codser",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "md5",
+							"value": "4d400ed7885be68342ab220fdf95eb6b",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "appId",
+							"value": "codser",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://127.0.0.1:8888/fms/fus/upload"
+			},
+			"response": []
+		}
+	]
+}

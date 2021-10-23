@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.codser.fmsapi.mapper.AppMapper">
+    <!--分页查询APP列表-st-->
+    <select id="queryAll" resultType="cn.codser.fmsapi.domain.vo.AppVo">
+        select *,
+        (select count(*) from fms_files where fms_files.app_id=fms_apps.app_id) as fileNum
+        from fms_apps
+        <where>
+            1=1
+            <if test="appId!=null">
+                and  fms_apps.app_id like '%${appId}%'
+            </if>
+            <if test="appName!=null">
+                and  fms_apps.app_name like '%${appName}%'
+            </if>
+            <if test="appDesc!=null">
+                and  fms_apps.app_desc like '%${appDesc}%'
+            </if>
+        </where>
+        order by create_time desc
+        limit #{lim0},#{lim1}
+    </select>
+    <select id="queryAllCount" resultType="java.lang.Integer">
+        select count(*)
+        from fms_apps
+        <where>
+            1=1
+            <if test="appId!=null">
+                and  fms_apps.app_id like '%${appId}%'
+            </if>
+            <if test="appName!=null">
+                and  fms_apps.app_name like '%${appName}%'
+            </if>
+            <if test="appDesc!=null">
+                and  fms_apps.app_desc like '%${appDesc}%'
+            </if>
+        </where>
+    </select>
+    <!--分页查询APP列表-ed-->
+</mapper>

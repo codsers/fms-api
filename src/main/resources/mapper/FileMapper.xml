@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.codser.fmsapi.mapper.FileMapper">
+    <!--分页查询文件列表-st-->
+    <select id="queryAll" resultType="cn.codser.fmsapi.domain.vo.FileVo">
+        select *,
+        (select app_name from fms_apps where fms_apps.app_id=fms_files.app_id) as appName
+        from fms_files
+        <where>
+            1=1
+            <if test="fileId!=null">
+                and  fms_files.file_id like '%${fileId}%'
+            </if>
+            <if test="appName!=null">
+                and  fms_files.app_id in (select app_id from fms_apps where fms_apps.app_name like '%${appName}%')
+            </if>
+            <if test="enableDownload!=null">
+                and  fms_files.enable_download=#{enableDownload}
+            </if>
+            <if test="realName!=null">
+                and  fms_files.real_name like '%${realName}%'
+            </if>
+            <if test="suffix!=null">
+                and  fms_files.suffix like '%${suffix}%'
+            </if>
+            <if test="cusTag!=null">
+                and  fms_files.cus_tag like '%${cusTag}%'
+            </if>
+            <if test="appId!=null">
+                and  fms_files.app_id like '%${appId}%'
+            </if>
+        </where>
+        order by fms_files.upload_time desc
+        limit #{lim0},#{lim1}
+    </select>
+    <select id="queryAllCount" resultType="java.lang.Integer">
+        select count(*)
+        from fms_files
+        <where>
+            1=1
+            <if test="fileId!=null">
+                and  fms_files.file_id like '%${fileId}%'
+            </if>
+            <if test="appName!=null">
+                and  fms_files.app_id in (select app_id from fms_apps where fms_apps.app_name like '%${appName}%')
+            </if>
+            <if test="enableDownload!=null">
+                and  fms_files.enable_download=#{enableDownload}
+            </if>
+            <if test="realName!=null">
+                and  fms_files.real_name like '%${realName}%'
+            </if>
+            <if test="suffix!=null">
+                and  fms_files.suffix like '%${suffix}%'
+            </if>
+            <if test="cusTag!=null">
+                and  fms_files.cus_tag like '%${cusTag}%'
+            </if>
+            <if test="appId!=null">
+                and  fms_files.app_id like '%${appId}%'
+            </if>
+        </where>
+    </select>
+    <!--分页查询文件列表-ed-->
+</mapper>
