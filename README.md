@@ -11,6 +11,7 @@ nohup \
 java -jar /app/fmsapi.jar \
 --spring.profiles.active=prod \
 --APP_PORT=8888 \ # 服务端口
+--INIT_SCHEMA=never|always \ # 启动时是否自动创建表，never:不创建，always:创建
 --SQLITE_PATH=/tmp/fmsapi.db \ # sqlite数据库文件路径
 --fms.admin.username=root \ # 管理员web登录账号
 --fms.admin.password=123456 \ # 管理员web登录密码
