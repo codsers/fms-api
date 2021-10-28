@@ -9,6 +9,8 @@ import cn.codser.fmsapi.mapper.FileMapper;
 import cn.codser.fmsapi.utils.FileUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import java.util.List;
  * 应用
  */
 @RestController
+@Api(value = "应用接口", tags = "应用管理相关的接口")
 @RequestMapping(value = "/fms/app")
 public class AppController {
 
@@ -39,6 +42,7 @@ public class AppController {
      * @param appDto
      * @return
      */
+    @ApiOperation("分页查询APP列表")
     @PostMapping("list")
     ResponseEntity<Object> list(@RequestBody AppDto appDto) {
         JSONObject res=new JSONObject();
@@ -52,6 +56,7 @@ public class AppController {
      * @param appDo
      * @return
      */
+    @ApiOperation("新增APP")
     @PostMapping("add")
     @Transactional(rollbackFor = Exception.class)
     ResponseEntity<Object> add(@RequestBody AppDo appDo) {
@@ -67,6 +72,7 @@ public class AppController {
      * @param appDo
      * @return
      */
+    @ApiOperation("编辑APP")
     @PostMapping("edit")
     @Transactional(rollbackFor = Exception.class)
     ResponseEntity<Object> edit(@RequestBody AppDo appDo) {
@@ -78,6 +84,7 @@ public class AppController {
      * @param appId
      * @return
      */
+    @ApiOperation("删除APP")
     @GetMapping("rm")
     @Transactional(rollbackFor = Exception.class)
     ResponseEntity<Object> rm(String appId) throws Exception {

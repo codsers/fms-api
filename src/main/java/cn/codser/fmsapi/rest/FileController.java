@@ -7,6 +7,8 @@ import cn.codser.fmsapi.domain.vo.RespVo;
 import cn.codser.fmsapi.mapper.AppMapper;
 import cn.codser.fmsapi.mapper.FileMapper;
 import com.alibaba.fastjson.JSONObject;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 文件
  */
+@Api(value = "文件接口", tags = "文件管理相关的接口")
 @RestController
 @RequestMapping(value = "/fms/file")
 public class FileController {
@@ -32,6 +35,7 @@ public class FileController {
      * @param fileDto
      * @return
      */
+    @ApiOperation("分页查询文件列表")
     @PostMapping("list")
     ResponseEntity<Object> list(@RequestBody FileDto fileDto) {
         JSONObject res=new JSONObject();
@@ -45,6 +49,7 @@ public class FileController {
      * @param fileId
      * @return
      */
+    @ApiOperation("改变文件下载状态")
     @GetMapping("changeDownloadStatus")
     ResponseEntity<Object> changeDownloadStatus(String fileId,Integer dwe) {
         FileDo fileDo=new FileDo();

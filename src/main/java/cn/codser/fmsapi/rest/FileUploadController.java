@@ -6,6 +6,10 @@ import cn.codser.fmsapi.domain.vo.RespVo;
 import cn.codser.fmsapi.mapper.AppMapper;
 import cn.codser.fmsapi.mapper.FileMapper;
 import cn.codser.fmsapi.utils.FileUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +27,7 @@ import java.io.File;
 /**
  * 文件上传
  */
+@Api(value = "文件上传接口", tags = "文件上传相关的接口")
 @RestController
 @RequestMapping(value = "/fms/fus")
 public class FileUploadController {
@@ -44,6 +49,7 @@ public class FileUploadController {
      * @param busInfo 业务数据
      * @return
      */
+    @ApiOperation("上传文件")
     @PostMapping("upload")
     @Transactional(rollbackFor = Exception.class)
     ResponseEntity<Object> upload(
@@ -59,7 +65,10 @@ public class FileUploadController {
             }
             String destMd5= StringUtils.isEmpty(md5) ?FileUtil.getMd5(multipartFile):md5;
 
-            FileDo fileDo=fileMapper.selectById(destMd5);
+            QueryWrapper<FileDo> fileDoQueryWrapper=new QueryWrapper<>();
+            fileDoQueryWrapper.eq("file_id",destMd5);
+            fileDoQueryWrapper.eq("app_id",appId);
+            FileDo fileDo=fileMapper.selectOne(fileDoQueryWrapper);
             String fileId=null;
             if(fileDo==null){
                 String savePath=FileUtil.getSavePath(multipartFile,appId,fileDo.PUBLIC_FILE_TYPE);
