@@ -86,8 +86,8 @@
 
           <el-row>
             <el-col>
-              <!-- <el-input v-model="file.query.appId" clearable size="small" placeholder="输入应用ID" style="width: 200px"
-                class="filter-item"></el-input> -->
+              <el-input v-model="file.query.appId" clearable size="small" placeholder="输入应用ID" style="width: 200px"
+                class="filter-item"></el-input>
               <el-input v-model="file.query.appName" clearable size="small" placeholder="输入应用名称" style="width: 200px"
                 class="filter-item"></el-input>
               <el-input v-model="file.query.fileId" clearable size="small" placeholder="输入文件ID" style="width: 200px"
@@ -120,7 +120,7 @@
             <el-col>
               <el-table :ref="file.tableRef" v-loading="file.loading" :data="file.data"
                 style="width: 100%;font-size:12pt">
-                <!-- <el-table-column label="应用ID" prop="appId"></el-table-column> -->
+                 <el-table-column label="应用ID" prop="appId"></el-table-column>
                 <el-table-column label="应用名称" prop="appName"></el-table-column>
                 <el-table-column label="文件ID" prop="fileId">
                   <template slot-scope="scope">
@@ -283,7 +283,7 @@
       methods: {
         // 根据文件id构建下载文件地址
         getDownloadHref(row) {
-          return '/fms/fds/download?fileId=' + row.fileId;
+          return '/fms/fds/download?fileId=' + row.fileId+'&appId='+row.appId;
         },
         // 应用列表当前页码切换
         appHandleCurrentChange(e) {

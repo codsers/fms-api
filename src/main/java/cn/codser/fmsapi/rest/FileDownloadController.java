@@ -5,6 +5,7 @@ import cn.codser.fmsapi.domain.doo.FileDo;
 import cn.codser.fmsapi.mapper.AppMapper;
 import cn.codser.fmsapi.mapper.FileMapper;
 import cn.codser.fmsapi.utils.FileUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class FileDownloadController {
     String fileHome;
 
     /**
-     * http://127.0.0.1:8888/fms/fds/download?fileId=2
+     * http://127.0.0.1:8888/fms/fds/download?fileId=2&appId=3
      * @param request
      * @param response
      * @param fileId 文件id
@@ -42,8 +43,12 @@ public class FileDownloadController {
     void download(
             HttpServletRequest request,
             HttpServletResponse response,
-            @RequestParam(name="fileId")String fileId) throws Exception{
-        FileDo fileDo = fileMapper.selectById(fileId);
+            @RequestParam(name="fileId")String fileId,
+            @RequestParam(name="appId")String appId) throws Exception{
+        QueryWrapper<FileDo> fileDoQueryWrapper=new QueryWrapper<>();
+        fileDoQueryWrapper.eq("file_id",fileId);
+        fileDoQueryWrapper.eq("app_id",appId);
+        FileDo fileDo=fileMapper.selectOne(fileDoQueryWrapper);
         FileUtil.downloadFileByAppDoAndFileDo(request,response,fileHome,fileDo);
     }
 }
