@@ -21,3 +21,15 @@ java -jar /app/fmsapi.jar \
 tail -f /app/fmsapi.log
 ```
 
+### 使用方式
+#### 登录web系统创建应用
+![登录](https://z3.ax1x.com/2021/10/30/5xLlVg.png)
+#### 应用管理
+![](https://z3.ax1x.com/2021/10/30/5xOJTe.png)
+#### 新建应用
+![](https://z3.ax1x.com/2021/10/30/5xONYd.png)
+#### 文件管理
+![](https://z3.ax1x.com/2021/10/30/5xOBOf.png)
+![](https://z3.ax1x.com/2021/10/30/5xOwlt.png)
+![](https://z3.ax1x.com/2021/10/30/5xO8eO.png)
+
